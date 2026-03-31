@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Black background website with a small clickable image that grows a little on each click and can be reset." />
+  <title>Growing Image</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-bg: #000;
+      --color-text: #fff;
+      --color-muted: #bdbdbd;
+      --color-border: rgba(255,255,255,0.16);
+      --color-button: rgba(255,255,255,0.08);
+      --color-button-hover: rgba(255,255,255,0.16);
+      --shadow-main: 0 20px 45px rgba(0,0,0,0.55);
+      --font-display: 'Luckiest Guy', cursive;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .reset-button {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 20;
+      border: 1px solid var(--color-border);
+      background: var(--color-button);
+      color: var(--color-text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      min-width: 44px;
+      min-height: 44px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .reset-button:hover,
+    .reset-button:focus-visible {
+      background: var(--color-button-hover);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .reset-button:active {
+      transform: scale(0.97);
+    }
+
+    .center {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-box.enlarged {
+  transform: scale(1.5);  
+  }
+
+    .image-button {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .image-box {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-main);
+      transform: scale(1);
+     transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+     will-change: transform;
+    }
+
+    .image-button.pop .image-box {
+      filter: brightness(1.08);
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .image-box img[src=""],
+    .image-box img:not([src]) {
+      opacity: 0;
+    }
+
+    .placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+      color: var(--color-muted);
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #151515, #050505);
+    }
+
+    .image-button.has-image .placeholder {
+      display: none;
+    }
+
+    .overlay-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      text-align: center;
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: clamp(22px, 2vw, 34px);
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-shadow: 0 3px 16px rgba(0,0,0,0.9);
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.8;
+    }
+
+    .ring {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(255,255,255,0.75);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      animation: ringBurst 0.5s ease-out forwards;
+    }
+
+    .spark {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      margin-left: -4px;
+      margin-top: -4px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 12px rgba(255,255,255,0.7);
+      pointer-events: none;
+      animation: sparkFly 0.55s ease-out forwards;
+    }
+
+    @keyframes ringBurst {
+      from { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); }
+      to { opacity: 0; transform: translate(-50%, -50%) scale(4); }
+    }
+
+    @keyframes sparkFly {
+      from { opacity: 1; transform: rotate(var(--angle)) translateX(0); }
+      to { opacity: 0; transform: rotate(var(--angle)) translateX(var(--distance)); }
+    }
+
+    @media (max-width: 640px) {
+      .image-button {
+        width: 145px;
+        height: 145px;
+      }
+
+      .reset-button {
+        top: 12px;
+        right: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="reset-button" id="resetButton" type="button">Reset</button>
+
+  <main class="center">
+    <button class="image-button" id="imageButton" type="button" aria-label="Growing image button">
+      <div class="image-box" id="imageBox">
+        <img id="mainImage" src="image-from-rawpixel-id-16506884-png.png" alt="Your clickable image" width="800" height="800" loading="eager" decoding="async">
+        <div class="placeholder">Paste image URL here</div>
+        <div class="overlay-text">نتي شابة</div>
+      </div>
+    </button>
+  </main>
+
+  <script>
+    const imageButton = document.getElementById('imageButton');
+    const imageBox = document.getElementById('imageBox');
+    const resetButton = document.getElementById('resetButton');
+    const image = document.getElementById('mainImage');
+
+    let scale = 1;
+    const step = 0.12;
+    const maxScale = 5;
+
+    function applyScale() {
+      imageBox.style.transform = `scale(${scale})`;
+    }
+
+    function syncPlaceholder() {
+      const hasImage = image.getAttribute('src') && image.getAttribute('src').trim() !== '';
+      imageButton.classList.toggle('has-image', hasImage);
+    }
+
+    function createEffects() {
+      const ring = document.createElement('span');
+      ring.className = 'ring';
+      imageButton.appendChild(ring);
+      ring.addEventListener('animationend', () => ring.remove(), { once: true });
+
+      for (let i = 0; i < 8; i++) {
+        const spark = document.createElement('span');
+        spark.className = 'spark';
+        spark.style.setProperty('--angle', `${i * 45}deg`);
+        spark.style.setProperty('--distance', `${30 + Math.random() * 34}px`);
+        imageButton.appendChild(spark);
+        spark.addEventListener('animationend', () => spark.remove(), { once: true });
+      }
+    }
+
+    imageButton.addEventListener('click', function () {
+  scale = Math.min(scale + step, maxScale);
+  applyScale();
+  imageButton.classList.remove('pop');
+  void imageButton.offsetWidth;
+  imageButton.classList.add('pop');
+  createEffects();
+  setTimeout(() => imageButton.classList.remove('pop'), 320);
+});
+
+    resetButton.addEventListener('click', function () {
+      scale = 1;
+      applyScale();
+    });
+
+    image.addEventListener('load', syncPlaceholder);
+    image.addEventListener('error', syncPlaceholder);
+
+    syncPlaceholder();
+    applyScale();
+  </script>
+</body>
+</html>
