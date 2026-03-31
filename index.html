@@ -189,6 +189,16 @@
       pointer-events: none;
       animation: sparkFly 0.55s ease-out forwards;
     }
+    button,
+img,
+.image-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus,
+.image-button:focus {
+  outline: none;
+}
 
     @keyframes ringBurst {
       from { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); }
